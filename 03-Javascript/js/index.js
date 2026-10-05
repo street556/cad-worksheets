@@ -1,37 +1,87 @@
-document.addEventListener("DOMContentLoaded", function() {
-    'use strict';
+'use strict';
 
-    // 1. Encontrar o contentor no HTML
-    var container = document.getElementById("controls-container"); // Supondo que existe um elemento com id "controls-container" no HTML
+// Controlo dos Switches (Luzes e Música) 
+function setupSwitch(switchId, iconId, isMusic = false) {
+    var sw = document.getElementById(switchId);
+    var icon = document.getElementById(iconId);
 
-    // 2. Criar a div principal do Bootstrap para o switch
-    var formDiv = document.createElement("div"); // Cria uma div para o switch
-    formDiv.className = "form-check form-switch fs-5 mb-3"; // Adiciona classes do Bootstrap para o switch, tamanho da fonte e margem inferior
+    if (!sw || !icon) return;
 
-    // 3. Criar o input (o botão slider)
-    var input = document.createElement("input"); // Cria o elemento input
-    input.className = "form-check-input"; // Adiciona a classe do Bootstrap para o input
-    input.type = "checkbox"; // Define o tipo como checkbox
-    input.role = "switch"; // Define o papel como switch
-    input.id = "kitchenLightSwitch"; // Define o id para associar à label
-    
-    // Opcional: Detetar quando o botão é alterado
-    input.addEventListener("change", function() { // Adiciona um "ouvinte de evento" para mudanças no estado do switch
-        if (this.checked) { // Se o switch estiver ligado
-            console.log("Luzes ligadas!"); // Coloca um log na consola a indicar que as luzes estão ligadas
+    function updateState() {
+        if (sw.checked) {
+            if (isMusic) {
+                icon.className = "fas fa-music me-2 text-primary";
+            } else {
+                icon.className = "fas fa-lightbulb me-2 text-warning";
+            }
         } else {
-            console.log("Luzes desligadas!"); // Coloca um log na consola a indicar que as luzes estão desligadas
+            if (isMusic) {
+                icon.className = "fas fa-volume-xmark me-2 text-danger";
+            } else {
+                icon.className = "far fa-lightbulb me-2 text-secondary";
+            }
+        }
+    }
+
+    updateState();
+
+    sw.addEventListener("change", function() {
+        updateState();
+        if (this.checked) {
+            console.log(switchId + " ligado!");
+        } else {
+            console.log(switchId + " desligado!");
         }
     });
+}
 
-    // 4. Criar a etiqueta (label) do botão
-    var label = document.createElement("label"); // Cria o elemento label
-    label.className = "form-check-label"; // Adiciona a classe do Bootstrap para a label
-    label.setAttribute("for", "kitchenLightSwitch"); // Associa a label ao input através do atributo "for"
-    label.innerText = "Kitchen Lights"; // Define o texto da label
+// Configurar todos os interruptores do painel
+setupSwitch("kitchenLightSwitch", "kitchenLightIcon", false);
+setupSwitch("livingCeilingLightSwitch", "livingCeilingLightIcon", false);
+setupSwitch("livingAmbientLightSwitch", "livingAmbientLightIcon", false);
+setupSwitch("ambientMusicSwitch", "ambientMusicIcon", true);
 
-    // 5. Juntar o input e a label à div, e colocar tudo dentro do contentor da página
-    formDiv.appendChild(input); // Adiciona o input à div
-    formDiv.appendChild(label); // Adiciona a label à div
-    container.appendChild(formDiv); // Adiciona a div ao contentor principal
-});
+
+// Atualização automática da Temperatura a cada 5 segundos 
+function updateTemperatures() {
+    var kitchenTemp = document.getElementById("kitchenTemp");
+    var livingTemp = document.getElementById("livingTemp");
+
+    if (kitchenTemp) {
+        var randKitchen = (Math.random() * (30 - 10) + 10).toFixed(1);
+        kitchenTemp.innerText = randKitchen + " °C";
+    }
+
+    if (livingTemp) {
+        var randLiving = (Math.random() * (30 - 10) + 10).toFixed(1);
+        livingTemp.innerText = randLiving + " °C";
+    }
+}
+
+updateTemperatures();
+setInterval(updateTemperatures, 5000);
+
+
+// Atualização da Data e Relógio 
+function updateClock() {
+    var now = new Date();
+
+    var currentDateElement = document.getElementById("currentDate");
+    if (currentDateElement) {
+        var year = now.getFullYear();
+        var month = String(now.getMonth() + 1).padStart(2, '0');
+        var day = String(now.getDate()).padStart(2, '0');
+        currentDateElement.innerText = year + "-" + month + "-" + day;
+    }
+
+    var currentTimeElement = document.getElementById("currentTime");
+    if (currentTimeElement) {
+        var hours = String(now.getHours()).padStart(2, '0');
+        var minutes = String(now.getMinutes()).padStart(2, '0');
+        var seconds = String(now.getSeconds()).padStart(2, '0');
+        currentTimeElement.innerText = hours + ":" + minutes + ":" + seconds;
+    }
+}
+
+updateClock();
+setInterval(updateClock, 1000);
