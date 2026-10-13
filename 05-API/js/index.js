@@ -2,12 +2,19 @@
 
 document.addEventListener("DOMContentLoaded", function() {
 
-    // --- 1. Controlo dos Switches (Luzes e Música) ---
+    // --- 1. Controlo dos Switches (Luzes e Música) com SessionStorage ---
     function setupSwitch(switchId, iconId, isMusic = false) {
         var sw = document.getElementById(switchId);
         var icon = document.getElementById(iconId);
 
         if (!sw || !icon) return;
+
+        // Recuperar o estado guardado no sessionStorage ao carregar a página
+        var savedData = sessionStorage.getItem(switchId);
+        if (savedData !== null) {
+            var parsedData = JSON.parse(savedData);
+            sw.checked = parsedData.checked; // Restaura o estado (ligado/desligado)
+        }
 
         function updateState() {
             if (sw.checked) {
@@ -29,6 +36,16 @@ document.addEventListener("DOMContentLoaded", function() {
 
         sw.addEventListener("change", function() {
             updateState();
+
+            // Criar o objeto com o estado e a hora em que foi alterado
+            var switchStateObj = {
+                checked: this.checked,
+                toggledAt: new Date().toLocaleTimeString()
+            };
+
+            // Guardar no sessionStorage convertendo o objeto para string com JSON.stringify
+            sessionStorage.setItem(switchId, JSON.stringify(switchStateObj));
+
             if (this.checked) {
                 console.log(switchId + " ligado!");
             } else {
